@@ -51,7 +51,7 @@ X, y = zip(*combined)
 
 # weights
 W = np.random.randn(INPUT_SIZE) * 0.01
-learning_rate = 0.1
+learning_rate = 0.01
 
 # training loop
 for epoch in range(100):
