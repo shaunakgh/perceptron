@@ -10,6 +10,19 @@ IMG_SIZE = 50
 INPUT_SIZE = (IMG_SIZE**2)+1
 IMG_AMOUNT = 200
 
+# functions
+def sigmoid(z):
+	return 1.0 / (1.0 + np.exp(-z))
+def update_weights(xi, target, W, learning_rate):
+	correct = False
+	z = np.dot(xi, W)
+	a = sigmoid(z)
+	prediction = 1 if a >= 0.5 else 0
+	correct = True if prediction == target else False
+	error = target - a
+	W += learning_rate * error * xi
+	return W, correct, prediction, a
+
 # image set
 circles_PATH = "media/simple/circles"
 squares_PATH = "media/simple/squares"
@@ -55,17 +68,11 @@ learning_rate = 0.01
 
 # training loop
 for epoch in range(100):
-	correct = 0
+	total = 0
 	for xi, target in zip(X, y):
-		z = np.dot(xi, W)
-		prediction = 1 if z > 0 else 0
-		error = target - prediction
-		W += learning_rate * error * xi
-        
-		if prediction == target:
-			correct += 1
-
-		accuracy = correct / len(y) * 100
+		W, correct, p, a = update_weights(xi, target, W, learning_rate)
+		total += 1 if correct else 0
+		accuracy = total / len(y) * 100
 		print(f"epoch [{epoch:2d}] accuracy: [{accuracy:5.1f}%]")
 
 # test with new data
@@ -82,10 +89,16 @@ for i in range(5):
 		X1.append(vec)
 		y1.append(0)
 
+print("testing")
+total = 0
+options = ["circle", "square"]
 for xi, target in zip(X1, y1):
-		z = np.dot(xi, W)
-		prediction = 1 if z > 0 else 0
-		sprediction = "circle" if z > 0 else "square"
-		correct = True if prediction == target else False
-		print(f"prediction: [{sprediction}] activation: [{abs(z)}] correct: [{correct}]")
+	W, correct, p, a = update_weights(xi, target, W, learning_rate)
+	total += 1 if correct else 0
+	accuracy = total / len(y1) * 100
+	print(f"prediction: [{options[p]}] correct: [{correct}] score: [{accuracy}%] activation: [{a}]")
+
+
+
+
 
